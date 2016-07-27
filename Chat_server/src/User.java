@@ -1,24 +1,32 @@
 
 import java.net.InetAddress;
 
-public class Client {
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+/**
+ *
+ * @author nayra
+ */
+public class User {
 
     private String username;
     private InetAddress ipAddress;
-    private int port;
+    private int portNumber;
 
-    public Client() {
+    public User() {
     }
 
-    public Client(InetAddress ipAddress, int port) {
+    public User(InetAddress ipAddress, int port) {
         this.ipAddress = ipAddress;
-        this.port = port;
+        this.portNumber = port;
     }
 
-    public Client(String username, InetAddress ipAddress, int port) {
+    public User(String username, InetAddress ipAddress, int port) {
         this.username = username;
         this.ipAddress = ipAddress;
-        this.port = port;
+        this.portNumber = port;
     }
 
     public String getUsername() {
@@ -37,11 +45,11 @@ public class Client {
         this.ipAddress = ipAddress;
     }
 
-    public int getPort() {
-        return port;
+    public int getPortNumber() {
+        return portNumber;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPort(int portNumber) {
+        this.portNumber = portNumber;
     }
 }

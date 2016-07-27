@@ -7,18 +7,19 @@
  *
  * @author nayra
  */
-public enum Constants {
-    
-    CONNECT("1"),
-    CONNECT_ACCEPTED("2"),
-    USERNAME_UNAVAILABLE("3"),
-    DISCONNECT("4"),
-    SHOW_USERS("/susers"),
-    PRIVATE_MESSAGE("/p");
-    
+public enum R {
+
+    CARACTER(" "),
+    CONNECT("/request_connect"),
+    CONNECTION_ACCEPTED("/connection_accepted"),
+    USERNAME_UNAVAILABLE("/user_unavailable"),
+    DISCONNECT("/disconnect"),
+    SHOW_USERS("/users"),
+    PRIVATE_MESSAGE("/private"),
+    HISTORY("/history");
     String value;
 
-    private Constants(String value) {
+    private R(String value) {
         this.value = value;
     }
 
@@ -30,5 +31,4 @@ public enum Constants {
     public String toString() {
         return "Constants{" + "value=" + value + '}';
     }
-    
 }

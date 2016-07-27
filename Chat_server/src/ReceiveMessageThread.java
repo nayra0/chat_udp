@@ -13,52 +13,94 @@ import java.net.DatagramPacket;
 public class ReceiveMessageThread extends Thread {
 
     private Server server;
+    private DatagramPacket receivePacket;
 
     public ReceiveMessageThread(Server server) {
+        
         this.server = server;
     }
 
     @Override
     public void run() {
         while (true) {
+            
             byte[] buf = new byte[16000];
 
-            DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
+            this.receivePacket = new DatagramPacket(buf, buf.length);
 
             try {
-                this.server.getSocket().receive(receivePacket);
+
+                this.server.getSocket().receive(this.receivePacket);
 
                 String message = new String(receivePacket.getData()).trim();
-                String[] parts = message.split(":");
+                String[] parts = message.split(R.CARACTER.getValue());
 
-                Client client = new Client(receivePacket.getAddress(), receivePacket.getPort());
+                if (message.isEmpty() || parts.length < 2) {
+                    
+                    continue;
+                }
 
-                if (parts[1].equals(Constants.CONNECT.getValue())) {
-                    if (!this.server.getClients().containsKey(parts[0])) {
-                        client.setUsername(parts[0]);
-                        this.server.getClients().put(client.getUsername(), client);
-                        this.server.sendConnectionInformation(Constants.CONNECT_ACCEPTED.getValue(), client);
+                String username = parts[0].trim();
+                String command = parts[1].trim();
+
+                User user = new User(receivePacket.getAddress(), receivePacket.getPort());
+
+                if (command.equals(R.CONNECT.getValue())) {
+
+                    if (!this.server.getUsers().containsKey(username)) {
+
+                        this.server.register(username, user);
                     } else {
-                        this.server.sendConnectionInformation(Constants.USERNAME_UNAVAILABLE.getValue(), client);
+
+                        this.server.sendMessageUser(R.USERNAME_UNAVAILABLE.getValue(), user);
                     }
-                } else if (parts[1].equals(Constants.DISCONNECT.getValue())) {
-                    if (this.server.getClients().containsKey(parts[0])) {
-                        this.server.getClients().remove(parts[0]);
-                    }
+                } else if (command.equals(R.DISCONNECT.getValue())) {
+
+                    this.server.unregister(username);
+
                 } else {
-                    if (this.server.getClients().containsKey(parts[0])) {
-                        client = this.server.getClients().get(parts[0]);
-                        if (parts[1].equals(Constants.SHOW_USERS.getValue())) {
-                            this.server.sendMessageClient(this.server.getClients().keySet().toString(), client);
-                        } else if (parts[1].equals(Constants.PRIVATE_MESSAGE.getValue())) {
-                            
+
+                    if (this.server.getUsers().containsKey(username)) {
+
+                        user = this.server.getUsers().get(username);
+                        if (command.equals(R.SHOW_USERS.getValue())) {
+
+                            this.server.sendMessageUser(this.server.getUsers().keySet().toString(), user);
+                        } else if (command.equals(R.PRIVATE_MESSAGE.getValue())) {
+
+                            if (parts.length >= 3) {
+
+                                String usernameDest = parts[2].trim();
+                                this.server.sendPrivateMessage(message, user, usernameDest);
+                            } else {
+
+                                this.server.sendMessageUser("Especifique o usuário destino!", user);
+                            }
+                        } else if (command.equals(R.HISTORY.getValue())) {
+
+                            if (parts.length >= 3) {
+
+                                String usernameDest = parts[2].trim();
+                                if (usernameDest.trim().isEmpty()) {
+
+                                    this.server.sendPublicHistory(user);
+                                } else {
+
+                                    User dest = this.server.getUsers().get(usernameDest);
+                                    this.server.sendPrivateHistory(user, dest);
+                                }
+                            } else {
+
+                                this.server.sendPublicHistory(user);
+                            }
                         } else {
-                            this.server.sendBroadcastMessage(message.replace(parts[0] + ":", ""), client);
+                            this.server.sendBroadcastMessage(message.replace(username + R.CARACTER.getValue(), ""), user);
                         }
                     }
                 }
 
             } catch (IOException e) {
+                System.err.println("Ocorreu um erro desconhecido!");
             }
         }
     }
@@ -69,5 +111,13 @@ public class ReceiveMessageThread extends Thread {
 
     public void setServer(Server server) {
         this.server = server;
+    }
+
+    public DatagramPacket getReceivePacket() {
+        return receivePacket;
+    }
+
+    public void setReceivePacket(DatagramPacket receivePacket) {
+        this.receivePacket = receivePacket;
     }
 }

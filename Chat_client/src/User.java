@@ -7,7 +7,7 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Client {
+public class User {
 
     private String username;
     private Server server;
@@ -15,7 +15,7 @@ public class Client {
     private DatagramSocket socket;
     private Chat chat;
 
-    public Client(String username, Server server) throws SocketException {
+    public User(String username, Server server) throws SocketException {
         this.username = username;
         this.server = server;
         this.socket = new DatagramSocket();
@@ -26,7 +26,7 @@ public class Client {
         try {
             byte[] sendBuffer;
             byte[] receiveBuffer = new byte[16000];
-            String message = this.username + ":" + Constants.CONNECT.getValue();
+            String message = this.username + R.CARACTER.getValue() + R.CONNECT.getValue();
             sendBuffer = message.getBytes();
 
             DatagramPacket connectPack = new DatagramPacket(sendBuffer, sendBuffer.length, this.server.getAddress(), this.server.getPort());
@@ -42,14 +42,14 @@ public class Client {
             }
 
             message = new String(receivePacket.getData()).trim();
-            if (message.equals(Constants.CONNECT_ACCEPTED.getValue())) {
+            if (message.equals(R.CONNECTION_ACCEPTED.getValue())) {
                 return new MessageServer("Conexão efetuada!", true);
-            } else if (message.equals(Constants.USERNAME_UNAVAILABLE.getValue())) {
+            } else if (message.equals(R.USERNAME_UNAVAILABLE.getValue())) {
                 return new MessageServer("O username '" + this.username + "' já está em uso!", false);
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new MessageServer("Ocorreu um erro desconhecido!", false);
     }
@@ -57,7 +57,7 @@ public class Client {
     public void disconnectServer() {
         try {
             byte[] sendBuffer;
-            String message = this.username + ":" + Constants.DISCONNECT.getValue();
+            String message = this.username + R.CARACTER.getValue() + R.DISCONNECT.getValue();
             sendBuffer = message.getBytes();
 
             DatagramPacket connectPacket = new DatagramPacket(sendBuffer, sendBuffer.length, this.server.getAddress(), this.server.getPort());
@@ -66,7 +66,7 @@ public class Client {
             this.socket.close();
 
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -74,18 +74,18 @@ public class Client {
         try {
             byte[] sendBuffer;
 
-            if (command.contains(Constants.PRIVATE_MESSAGE.getValue())) {
-                command = command.replace(Constants.PRIVATE_MESSAGE.getValue(), "");
-                command = this.username + ":" + Constants.PRIVATE_MESSAGE.getValue() + ":" + command;
+            if (command.contains(R.PRIVATE_MESSAGE.getValue())) {
+                command = command.replace(R.PRIVATE_MESSAGE.getValue(), "");
+                command = this.username + R.CARACTER.getValue() + R.PRIVATE_MESSAGE.getValue() + R.CARACTER.getValue() + command.trim();
             } else {
-                command = this.username + ":" + command;
+                command = this.username + R.CARACTER.getValue() + command.trim();
             }
             sendBuffer = command.getBytes();
             DatagramPacket commandPacket = new DatagramPacket(sendBuffer, sendBuffer.length, this.server.getAddress(), this.server.getPort());
             this.socket.send(commandPacket);
 
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -93,6 +93,7 @@ public class Client {
         this.receiveMessage.start();
         this.chat = new Chat(this);
         this.chat.setVisible(true);
+        this.chat.setTitle(this.username + " on " + this.server.getAddress().getHostName());
     }
 
     public String getUsername() {

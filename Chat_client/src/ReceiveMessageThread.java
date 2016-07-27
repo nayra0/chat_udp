@@ -12,10 +12,10 @@ import java.net.DatagramPacket;
  */
 public class ReceiveMessageThread extends Thread {
 
-    private Client client;
+    private User user;
 
-    public ReceiveMessageThread(Client client) {
-        this.client = client;
+    public ReceiveMessageThread(User user) {
+        this.user = user;
     }
 
     @Override
@@ -26,25 +26,25 @@ public class ReceiveMessageThread extends Thread {
             DatagramPacket recPack = new DatagramPacket(recBuffer, recBuffer.length);
             recBuffer = new byte[recBuffer.length];
             try {
-                this.client.getSocket().receive(recPack);
+                this.user.getSocket().receive(recPack);
             } catch (IOException e) {
             }
             String recString = new String(recPack.getData());
             trimmed = recString.trim();
 
             if (!trimmed.isEmpty()) {
-                this.client.getChat().getTextPane().setText(this.client.getChat().getTextPane().getText() + "\n"+  trimmed);
+                this.user.getChat().getTextPane().setText(this.user.getChat().getTextPane().getText() + trimmed + "\n");
             }
 
         } while (!trimmed.equals("/endchat"));
-        this.client.getSocket().close();
+        this.user.getSocket().close();
     }
 
-    public Client getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
