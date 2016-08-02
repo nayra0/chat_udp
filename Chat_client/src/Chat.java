@@ -7,12 +7,20 @@ import javax.swing.JTextPane;
  */
 /**
  *
+ * Classe da janela de chat
+ * 
  * @author nayra
  */
 public class Chat extends javax.swing.JFrame {
 
     private User user;
 
+    /**
+     * 
+     * Construtor que recebe uma instância de user
+     * 
+     * @param user 
+     */
     public Chat(User user) {
         this();
         this.user = user;
@@ -137,6 +145,12 @@ public class Chat extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * 
+     * Envia o texto que está no textArea para o servidor
+     * 
+     * @param evt 
+     */
     private void enviarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enviarButtonActionPerformed
         this.user.sendMessageToServer(this.textArea.getText());
         this.textArea.setText("");
@@ -145,14 +159,32 @@ public class Chat extends javax.swing.JFrame {
         this.user.disconnectServer();
     }//GEN-LAST:event_formCloseAction
 
+    /**
+     * 
+     * Coloca no campo texto a comando de mensagem privada
+     * 
+     * @param evt 
+     */
     private void privateMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privateMessageButtonActionPerformed
         this.textArea.setText(R.PRIVATE_MESSAGE.getValue() + R.CARACTER.getValue());
     }//GEN-LAST:event_privateMessageButtonActionPerformed
 
+    /**
+     * 
+     * Coloca no campo texto a comando de listar usuários
+     * 
+     * @param evt 
+     */
     private void usersButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usersButtonAction
         this.textArea.setText(R.SHOW_USERS.getValue() + R.CARACTER.getValue());
     }//GEN-LAST:event_usersButtonAction
 
+    /**
+     * 
+     * Coloca no campo texto a comando de mostrar histórico
+     * 
+     * @param evt 
+     */
     private void historyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyButtonActionPerformed
         this.textArea.setText(R.HISTORY.getValue() + R.CARACTER.getValue());
     }//GEN-LAST:event_historyButtonActionPerformed

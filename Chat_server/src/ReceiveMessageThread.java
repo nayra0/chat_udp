@@ -8,6 +8,9 @@ import java.net.DatagramPacket;
  */
 /**
  *
+ * Thread onde o socket do servidor irá 
+ * esperar por mensagens.
+ * 
  * @author nayra
  */
 public class ReceiveMessageThread extends Thread {
@@ -15,6 +18,12 @@ public class ReceiveMessageThread extends Thread {
     private Server server;
     private DatagramPacket receivePacket;
 
+    /**
+     * 
+     * Construtor que recebe uma instância de server
+     * 
+     * @param server 
+     */
     public ReceiveMessageThread(Server server) {
         
         this.server = server;

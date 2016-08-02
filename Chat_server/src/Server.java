@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Date;
 import java.util.HashMap;
 
 /*
@@ -11,6 +12,8 @@ import java.util.HashMap;
  */
 /**
  *
+ * Classe que representa o servidor
+ * 
  * @author nayra
  */
 public class Server {
@@ -22,6 +25,14 @@ public class Server {
     private String publicHistory;
     private HashMap<String, String> privateMessageHistory;
 
+    /**
+     * 
+     * Construtor que recebe a porta onde o servidor
+     * vai abrir o socket UDP
+     * 
+     * @param port
+     * @throws SocketException 
+     */    
     public Server(int port) throws SocketException {
 
         this.port = port;
@@ -32,10 +43,15 @@ public class Server {
         this.privateMessageHistory = new HashMap();
     }
 
-    public int getPort() {
-        return port;
-    }
-
+    /**
+     * 
+     * Método que registra o usuário no servidor.
+     * Adiciona o usuário na lista de usuários ativos
+     * e envia mensagem para o usuário que a conexão foi aceita.
+     * 
+     * @param username
+     * @param user 
+     */
     public void register(String username, User user) {
 
         user.setUsername(username);
@@ -43,6 +59,13 @@ public class Server {
         sendMessageUser(R.CONNECTION_ACCEPTED.getValue(), user);
     }
 
+    /**
+     * 
+     * Remove o registro do usuário no servidor.
+     * Remove da lista de usuários ativos.
+     * 
+     * @param username 
+     */
     public void unregister(String username) {
 
         if (this.users.containsKey(username)) {
@@ -51,6 +74,13 @@ public class Server {
         }
     }
 
+    /**
+     * 
+     * Envia uma mensagem ao determinado usuário.
+     * 
+     * @param message
+     * @param user 
+     */
     public void sendMessageUser(String message, User user) {
 
         try {
@@ -67,35 +97,69 @@ public class Server {
 
     }
 
+    /**
+     * 
+     * Envia uma mensagem a um determinado usuário.
+     * 
+     * @param message
+     * @param username 
+     */
     public void sendMessageUser(String message, String username) {
 
         User user = this.users.get(username);
         sendMessageUser(message, user);
     }
 
+    /**
+     * 
+     * Envia uma mensagem privada do usuário 'origin' 
+     * para o usuário destino 'usernameDest'
+     * 
+     * @param message
+     * @param origin
+     * @param usernameDest 
+     */
     public void sendPrivateMessage(String message, User origin, String usernameDest) {
 
         User dest = this.users.get(usernameDest);
         sendPrivateMessage(message, origin, dest);
     }
 
+    
+    /**
+     * 
+     * Envia uma mensagem privada do usuário 'origin' 
+     * para o usuário 'dest' e adiciona no histórico.
+     * 
+     * @param message
+     * @param origin
+     * @param usernameDest 
+     */
     public void sendPrivateMessage(String message, User origin, User dest) {
 
         message = message.replace(origin.getUsername() + R.CARACTER.getValue() + R.PRIVATE_MESSAGE.getValue() + R.CARACTER.getValue() + dest.getUsername(), "");
 
-        String messageDest = "[ " + origin.getUsername() + " sends ]=> " + message;
+        String messageDest = "[ " + Util.printDateHour(new Date()) + " " + origin.getUsername() + " sends ]=> " + message;
         sendMessageUser(messageDest, dest);
 
-        String messageOrig = "[ to " + dest.getUsername() + "]=> " + message;
+        String messageOrig = "[ " + Util.printDateHour(new Date()) + " to " + dest.getUsername() + "]=> " + message;
         sendMessageUser(messageOrig, origin);
 
-        message = "[ " + origin.getUsername() + " ]=>" + message;
+        message = "[ " + Util.printDateHour(new Date()) + " " + origin.getUsername() + " ]=>" + message;
         addPrivateHistory(origin, dest, message);
     }
 
+    /**
+     * 
+     * Envia uma mensagem do usuário 'origin' para 
+     * todos os usuários ativos e adiciona no histórico.
+     * 
+     * @param message
+     * @param origin 
+     */
     public void sendBroadcastMessage(String message, User origin) {
 
-        message = "[ " + origin.getUsername() + " ]=>" + message;
+        message = "[ " + Util.printDateHour(new Date()) + " " + origin.getUsername() + " ]=> " + message;
         addPublicHistory(message);
 
         for (String key : this.users.keySet()) {
@@ -105,11 +169,25 @@ public class Server {
         }
     }
 
+    /**
+     * 
+     * Envia o histórico público para um usuário.
+     * 
+     * @param user 
+     */
     public void sendPublicHistory(User user) {
 
         sendMessageUser(publicHistory, user);
     }
 
+    /**
+     * 
+     * Envia o histórico privado do usuário 'origin' com usuário 'dest'
+     * para o usuário 'origin'.
+     * 
+     * @param origin
+     * @param dest 
+     */
     public void sendPrivateHistory(User origin, User dest) {
 
         String key = origin.getUsername() + "_" + dest.getUsername();
@@ -128,18 +206,32 @@ public class Server {
 
     }
 
+    /**
+     * 
+     * Adiciona mensagem ao histórico público.
+     * 
+     * @param message 
+     */
     public void addPublicHistory(String message) {
 
         this.publicHistory = this.publicHistory + "\n" + message;
     }
 
+    /**
+     * 
+     * Adiciona mensagem ao histórico privado do usuário 'origin' e usuário 'dest'
+     * 
+     * @param origin
+     * @param dest
+     * @param message 
+     */
     public void addPrivateHistory(User origin, User dest, String message) {
 
         String key = origin.getUsername() + "_" + dest.getUsername();
-        String inverseKey = dest.getUsername() + "_" + origin.getUsername();
-        if (!this.privateMessageHistory.containsKey(key) && this.privateMessageHistory.containsKey(inverseKey)) {
+        String reverseKey = dest.getUsername() + "_" + origin.getUsername();
+        if (!this.privateMessageHistory.containsKey(key) && this.privateMessageHistory.containsKey(reverseKey)) {
 
-            key = inverseKey;
+            key = reverseKey;
         }
 
         if (this.privateMessageHistory.containsKey(key)) {
@@ -149,6 +241,11 @@ public class Server {
         this.privateMessageHistory.put(key, message);
     }
 
+    /**
+     * 
+     * Inicia a thread que irá ficar recebendo as mensagens dos usuários.
+     * 
+     */
     public void start() {
         this.receiveMessageThread.start();
     }
@@ -195,5 +292,9 @@ public class Server {
 
     public void setPrivateMessageHistory(HashMap<String, String> privateMessageHistory) {
         this.privateMessageHistory = privateMessageHistory;
+    }
+    
+    public int getPort() {
+        return port;
     }
 }

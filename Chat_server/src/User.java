@@ -7,6 +7,8 @@ import java.net.InetAddress;
  */
 /**
  *
+ * Representa o usuário na aplicação servidor
+ * 
  * @author nayra
  */
 public class User {
@@ -15,17 +17,38 @@ public class User {
     private InetAddress ipAddress;
     private int portNumber;
 
+    /**
+     * 
+     * Construtor padrão
+     * 
+     */
     public User() {
     }
 
+    /**
+     * 
+     * Construtor que recebe o IP e a porta
+     * que o usuário enviou o pacote de conexão.
+     * 
+     * @param ipAddress
+     * @param port 
+     */
     public User(InetAddress ipAddress, int port) {
         this.ipAddress = ipAddress;
         this.portNumber = port;
     }
 
+    /**
+     * 
+     * Construtor que recebe o username, IP e a porta
+     * que o usuário enviou o pacote de conexão.
+     * 
+     * @param username
+     * @param ipAddress
+     * @param port 
+     */
     public User(String username, InetAddress ipAddress, int port) {
-        this.username = username;
-        this.ipAddress = ipAddress;
+        this(ipAddress, port);
         this.portNumber = port;
     }
 

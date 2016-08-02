@@ -7,6 +7,8 @@ import java.net.SocketException;
  */
 /**
  *
+ * Classe Principal onde se cria a instância do servidor.
+ * 
  * @author nayra
  */
 public class Main {

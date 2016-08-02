@@ -5,6 +5,8 @@
 
 /**
  *
+ * Comandos recebidos/enviados por Usuários/Servidor
+ * 
  * @author nayra
  */
 public enum R {

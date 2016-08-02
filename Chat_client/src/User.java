@@ -7,6 +7,17 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * Representa o usuário
+ * 
+ * @author nayra
+ */
 public class User {
 
     private String username;
@@ -15,6 +26,14 @@ public class User {
     private DatagramSocket socket;
     private Chat chat;
 
+    /**
+     * 
+     * Construtor que recebe o username e uma instancia do servidor
+     * 
+     * @param username
+     * @param server
+     * @throws SocketException 
+     */
     public User(String username, Server server) throws SocketException {
         this.username = username;
         this.server = server;
@@ -22,6 +41,13 @@ public class User {
         this.receiveMessage = new ReceiveMessageThread(this);
     }
 
+    /**
+     * 
+     * Envia uma mensagem para o servidor requisitando
+     * a entrada no chat
+     * 
+     * @return 
+     */
     public MessageServer connectServer() {
         try {
             byte[] sendBuffer;
@@ -54,6 +80,11 @@ public class User {
         return new MessageServer("Ocorreu um erro desconhecido!", false);
     }
 
+    /**
+     * 
+     * Envia uma mensagem para o servidor de fim de conexão
+     * 
+     */
     public void disconnectServer() {
         try {
             byte[] sendBuffer;
@@ -70,6 +101,12 @@ public class User {
         }
     }
 
+    /**
+     * 
+     * Envia mensagem para o servidor
+     * 
+     * @param command 
+     */
     public void sendMessageToServer(String command) {
         try {
             byte[] sendBuffer;
@@ -89,6 +126,12 @@ public class User {
         }
     }
 
+    /**
+     * 
+     * Inicia a thread que irá aguardar mensagens do servidor
+     * e mostra a janela do chat para o usuário
+     * 
+     */
     public void starChat() {
         this.receiveMessage.start();
         this.chat = new Chat(this);

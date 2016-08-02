@@ -8,6 +8,8 @@ import java.net.DatagramPacket;
  */
 /**
  *
+ *
+ *
  * @author nayra
  */
 public class ReceiveMessageThread extends Thread {
@@ -21,7 +23,7 @@ public class ReceiveMessageThread extends Thread {
     @Override
     public void run() {
         byte[] recBuffer = new byte[16000];
-        String trimmed = "";
+        String trimmed;
         do {
             DatagramPacket recPack = new DatagramPacket(recBuffer, recBuffer.length);
             recBuffer = new byte[recBuffer.length];
@@ -36,8 +38,7 @@ public class ReceiveMessageThread extends Thread {
                 this.user.getChat().getTextPane().setText(this.user.getChat().getTextPane().getText() + trimmed + "\n");
             }
 
-        } while (!trimmed.equals("/endchat"));
-        this.user.getSocket().close();
+        } while (true);
     }
 
     public User getUser() {

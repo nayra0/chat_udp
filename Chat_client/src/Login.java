@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
  */
 /**
  *
+ * Classe da janela de conexão
+ * 
  * @author nayra
  */
 public class Login extends javax.swing.JFrame {
@@ -203,6 +205,12 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_portTextFieldActionPerformed
 
+    /**
+     * 
+     * Efetua conexão do usuário no servidor
+     * 
+     * @param evt 
+     */
     private void connectAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectAction
         try {
             // Servidor

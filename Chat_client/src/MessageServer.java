@@ -1,3 +1,4 @@
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -5,6 +6,9 @@
 
 /**
  *
+ * Representa uma mensagem enviada pelo servidor
+ * para a tela de login
+ * 
  * @author nayra
  */
 public class MessageServer {
