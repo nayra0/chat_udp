@@ -8,9 +8,8 @@ import java.net.DatagramPacket;
  */
 /**
  *
- * Thread onde o socket do servidor irá 
- * esperar por mensagens.
- * 
+ * Thread onde o socket do servidor irá esperar por mensagens.
+ *
  * @author nayra
  */
 public class ReceiveMessageThread extends Thread {
@@ -19,20 +18,20 @@ public class ReceiveMessageThread extends Thread {
     private DatagramPacket receivePacket;
 
     /**
-     * 
+     *
      * Construtor que recebe uma instância de server
-     * 
-     * @param server 
+     *
+     * @param server
      */
     public ReceiveMessageThread(Server server) {
-        
+
         this.server = server;
     }
 
     @Override
     public void run() {
         while (true) {
-            
+
             byte[] buf = new byte[16000];
 
             this.receivePacket = new DatagramPacket(buf, buf.length);
@@ -45,7 +44,7 @@ public class ReceiveMessageThread extends Thread {
                 String[] parts = message.split(R.CARACTER.getValue());
 
                 if (message.isEmpty() || parts.length < 2) {
-                    
+
                     continue;
                 }
 
@@ -80,7 +79,11 @@ public class ReceiveMessageThread extends Thread {
                             if (parts.length >= 3) {
 
                                 String usernameDest = parts[2].trim();
-                                this.server.sendPrivateMessage(message, user, usernameDest);
+                                if (this.server.getUsers().containsKey(usernameDest)) {
+                                    this.server.sendPrivateMessage(message, user, usernameDest);
+                                } else {
+                                    this.server.sendMessageUser("Usuário " + usernameDest + " não encontrado!", user);
+                                }
                             } else {
 
                                 this.server.sendMessageUser("Especifique o usuário destino!", user);
@@ -94,9 +97,12 @@ public class ReceiveMessageThread extends Thread {
 
                                     this.server.sendPublicHistory(user);
                                 } else {
-
-                                    User dest = this.server.getUsers().get(usernameDest);
-                                    this.server.sendPrivateHistory(user, dest);
+                                    if (this.server.getUsers().containsKey(usernameDest)) {
+                                        User dest = this.server.getUsers().get(usernameDest);
+                                        this.server.sendPrivateHistory(user, dest);
+                                    } else {
+                                        this.server.sendMessageUser("Usuário " + usernameDest + " não encontrado!", user);
+                                    }
                                 }
                             } else {
 
